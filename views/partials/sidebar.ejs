@@ -1,0 +1,16 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">PEDRINHO OUTLET</div>
+    <div class="slogan">Painel de controle</div>
+    <nav>
+      <a href="/" class="<%= active === 'dashboard' ? 'active' : '' %>">Início</a>
+      <a href="/produtos" class="<%= active === 'produtos' ? 'active' : '' %>">Produtos / Estoque</a>
+      <a href="/pedidos" class="<%= active === 'pedidos' ? 'active' : '' %>">Pedidos</a>
+      <a href="/caixa" class="<%= active === 'caixa' ? 'active' : '' %>">Caixa</a>
+      <a href="/conta" class="<%= active === 'conta' ? 'active' : '' %>">Minha conta</a>
+    </nav>
+    <form method="POST" action="/logout">
+      <button class="logout" type="submit">Sair</button>
+    </form>
+  </aside>
+  <main class="main">
