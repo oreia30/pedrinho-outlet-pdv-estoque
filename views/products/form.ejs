@@ -1,0 +1,103 @@
+<% var isEdit = product && product.id; %>
+<%- include('../partials/head', { title: isEdit ? 'Editar produto' : 'Novo produto' }) %>
+<%- include('../partials/sidebar', { active: 'produtos' }) %>
+
+<h1><%= isEdit ? 'Editar produto' : 'Novo produto' %></h1>
+<p class="subtitle">Preços e fotos aparecem na loja assim que salvos</p>
+
+<% if (typeof error !== 'undefined' && error) { %><div class="error-box"><%= error %></div><% } %>
+
+<div class="form-card">
+  <form method="POST" action="<%= isEdit ? '/produtos/' + product.id : '/produtos' %>" enctype="multipart/form-data" id="product-form">
+    <div class="form-row">
+      <label>Nome do produto</label>
+      <input type="text" name="name" required value="<%= product ? product.name : '' %>" />
+    </div>
+
+    <div class="form-row">
+      <label>Descrição</label>
+      <textarea name="description"><%= product ? (product.description || '') : '' %></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Categoria</label>
+        <input type="text" name="category" placeholder="Ex: Camisetas, Calças, Bermudas"
+          value="<%= product ? (product.category || '') : '' %>" />
+      </div>
+      <div class="form-row">
+        <label>Preço (R$)</label>
+        <input type="number" step="0.01" min="0" name="price" required
+          value="<%= product ? product.price : '' %>" />
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Quantidade em estoque</label>
+        <input type="number" step="1" min="0" name="quantity"
+          value="<%= product ? product.quantity : 0 %>" />
+      </div>
+      <div class="form-row">
+        <label>Cor</label>
+        <input type="text" name="cor" placeholder="Ex: Preto"
+          value="<%= product && product.attributes && product.attributes.cor ? product.attributes.cor : '' %>" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Tamanhos disponíveis (separe por vírgula)</label>
+      <input type="text" name="tamanhos" placeholder="P, M, G, GG"
+        value="<%= product && product.attributes && product.attributes.tamanhos ? product.attributes.tamanhos.join(', ') : '' %>" />
+    </div>
+
+    <div class="form-row">
+      <label>
+        <input type="checkbox" name="active" <%= (!product || product.active) ? 'checked' : '' %> style="width:auto;display:inline;margin-right:6px;" />
+        Produto ativo (aparece na loja)
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>Galeria de fotos (até 5 fotos, 4MB cada)</label>
+      <input type="file" name="images" id="images-input" accept="image/*" multiple />
+      <div class="hint">As fotos não ficam salvas no banco de dados — vão para um serviço de arquivos (Vercel Blob) e só a URL é guardada.</div>
+      <div class="gallery" id="gallery-preview">
+        <% if (product && product.images && product.images.length) { %>
+          <% product.images.forEach(function(url) { %>
+            <div class="thumb" data-url="<%= url %>">
+              <img src="<%= url %>" />
+              <button type="button" class="remove" onclick="removeExisting(this)">×</button>
+              <input type="hidden" name="keepImages" value="<%= url %>" />
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <button class="btn" type="submit">Salvar produto</button>
+    <a class="btn secondary" href="/produtos">Cancelar</a>
+  </form>
+</div>
+
+<script>
+  function removeExisting(btn) {
+    btn.closest('.thumb').remove();
+  }
+
+  document.getElementById('images-input').addEventListener('change', function (e) {
+    const preview = document.getElementById('gallery-preview');
+    Array.from(e.target.files).forEach(function (file) {
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+        div.innerHTML = '<img src="' + ev.target.result + '" />';
+        preview.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %>
