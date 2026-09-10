@@ -1,0 +1,21 @@
+<%- include('partials/head', { title: 'Entrar' }) %>
+<div class="login-page">
+  <div class="login-card">
+    <div class="brand">PEDRINHO OUTLET</div>
+    <div class="slogan">Seu novo padrão de estilo começa aqui.</div>
+    <% if (error) { %><div class="error-box"><%= error %></div><% } %>
+    <form method="POST" action="/login">
+      <div class="form-row">
+        <label>E-mail</label>
+        <input type="email" name="email" required autofocus />
+      </div>
+      <div class="form-row">
+        <label>Senha</label>
+        <input type="password" name="password" required />
+      </div>
+      <button class="btn" type="submit" style="width:100%">Entrar</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
