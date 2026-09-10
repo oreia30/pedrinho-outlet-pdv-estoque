@@ -1,0 +1,77 @@
+<%- include('partials/head', { title: 'Nova venda' }) %>
+<%- include('partials/sidebar', { active: 'pdv' }) %>
+
+<h1>Nova venda (balcão)</h1>
+<p class="subtitle">Vende no balcão da loja física — desconta do estoque e lança no caixa na hora</p>
+
+<div id="pdv-msg"></div>
+
+<div class="pdv-layout">
+  <div class="pdv-catalog">
+    <input type="text" id="pdv-search" placeholder="Buscar produto por nome ou categoria..." />
+    <div class="pdv-product-list" id="pdv-product-list">
+      <% products.forEach(function(p) { %>
+        <div class="pdv-product" data-id="<%= p.id %>" data-name="<%= p.name.replace(/"/g, '&quot;') %>" data-price="<%= p.price %>" data-stock="<%= p.quantity %>" data-search="<%= (p.name + ' ' + (p.category||'')).toLowerCase() %>">
+          <div class="pdv-product-thumb">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="" /><% } else { %><span>Sem foto</span><% } %>
+          </div>
+          <div class="pdv-product-info">
+            <div class="pdv-product-name"><%= p.name %></div>
+            <div class="pdv-product-meta"><%= p.category || 'Sem categoria' %> · estoque: <%= p.quantity %></div>
+            <div class="pdv-product-price">R$ <%= Number(p.price).toFixed(2) %></div>
+          </div>
+          <button type="button" class="btn small" onclick="pdvAddToCart('<%= p.id %>')">Adicionar</button>
+        </div>
+      <% }) %>
+      <% if (!products.length) { %>
+        <div class="hint">Nenhum produto com estoque disponível.</div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="pdv-cart">
+    <h2 class="section-title">Venda atual</h2>
+    <div id="pdv-cart-items">
+      <div class="hint" id="pdv-cart-empty">Nenhum item adicionado ainda.</div>
+    </div>
+
+    <div class="pdv-totals">
+      <div class="pdv-totals-row"><span>Subtotal</span><span id="pdv-subtotal">R$ 0,00</span></div>
+      <div class="pdv-totals-row pdv-discount-row">
+        <span>Desconto</span>
+        <span>
+          <select id="pdv-discount-type">
+            <option value="valor">R$</option>
+            <option value="percentual">%</option>
+          </select>
+          <input type="number" step="0.01" min="0" id="pdv-discount-value" value="0" style="width:80px;" />
+        </span>
+      </div>
+      <div class="pdv-totals-row pdv-total"><span>Total</span><span id="pdv-total">R$ 0,00</span></div>
+    </div>
+
+    <div class="form-row">
+      <label>Forma de pagamento</label>
+      <select id="pdv-payment-method">
+        <% paymentMethods.forEach(function(m) { %>
+          <option value="<%= m %>"><%= m %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Nome do cliente (opcional)</label>
+      <input type="text" id="pdv-customer-name" placeholder="Cliente balcão" />
+    </div>
+    <div class="form-row">
+      <label>Observação (opcional)</label>
+      <input type="text" id="pdv-note" placeholder="Ex: pagou metade no pix" />
+    </div>
+
+    <button class="btn" id="pdv-confirm-btn" onclick="pdvConfirmarVenda()">Confirmar venda</button>
+  </div>
+</div>
+
+<script>window.__PDV_PRODUCTS = <%- JSON.stringify(products) %>;</script>
+<script src="/js/pdv.js"></script>
+
+<%- include('partials/footer') %>
