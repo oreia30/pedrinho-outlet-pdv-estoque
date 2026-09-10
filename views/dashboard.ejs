@@ -1,0 +1,56 @@
+<%- include('partials/head', { title: 'Início' }) %>
+<%- include('partials/sidebar', { active: 'dashboard' }) %>
+
+<h1>Olá 👋</h1>
+<p class="subtitle">Resumo do negócio hoje</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">Saldo em caixa</div>
+    <div class="value">R$ <%= saldo.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Pedidos hoje</div>
+    <div class="value"><%= pedidosHoje %></div>
+  </div>
+  <div class="card">
+    <div class="label">Faturado hoje</div>
+    <div class="value">R$ <%= faturadoHoje.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Itens com estoque baixo</div>
+    <div class="value"><%= baixoEstoque.length %></div>
+  </div>
+</div>
+
+<% if (baixoEstoque.length) { %>
+  <h1 style="font-size:1.1rem;">Estoque baixo</h1>
+  <table style="margin-bottom:28px;">
+    <thead><tr><th>Produto</th><th>Quantidade</th></tr></thead>
+    <tbody>
+      <% baixoEstoque.forEach(function(p) { %>
+        <tr><td><%= p.name %></td><td><%= p.quantity %></td></tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<h1 style="font-size:1.1rem;">Últimos pedidos</h1>
+<table>
+  <thead><tr><th>Cliente</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+  <tbody>
+    <% ultimosPedidos.forEach(function(o) { %>
+      <tr>
+        <td><%= o.customer_name %></td>
+        <td>R$ <%= Number(o.total).toFixed(2) %></td>
+        <td><span class="badge <%= o.status %>"><%= o.status %></span></td>
+        <td><%= new Date(o.created_at).toLocaleString('pt-BR') %></td>
+      </tr>
+    <% }) %>
+    <% if (!ultimosPedidos.length) { %>
+      <tr><td colspan="4">Nenhum pedido ainda.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<%- include('partials/footer') %>
