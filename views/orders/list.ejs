@@ -1,0 +1,41 @@
+<%- include('../partials/head', { title: 'Pedidos' }) %>
+<%- include('../partials/sidebar', { active: 'pedidos' }) %>
+
+<h1>Pedidos</h1>
+<p class="subtitle">Vendas feitas pela loja — o estoque e o caixa já foram atualizados automaticamente</p>
+
+<table>
+  <thead>
+    <tr><th>Cliente</th><th>Contato</th><th>Itens</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Data</th></tr>
+  </thead>
+  <tbody>
+    <% orders.forEach(function(o) { %>
+      <tr>
+        <td><%= o.customer_name %></td>
+        <td><%= o.customer_contact || '-' %></td>
+        <td>
+          <% (o.items || []).forEach(function(item) { %>
+            <div><%= item.quantity %>x <%= item.name %></div>
+          <% }) %>
+        </td>
+        <td>R$ <%= Number(o.total).toFixed(2) %></td>
+        <td><%= o.payment_method || '-' %></td>
+        <td>
+          <form method="POST" action="/pedidos/<%= o.id %>/status" style="display:inline">
+            <select name="status" onchange="this.form.submit()">
+              <option value="pendente" <%= o.status === 'pendente' ? 'selected' : '' %>>pendente</option>
+              <option value="pago" <%= o.status === 'pago' ? 'selected' : '' %>>pago</option>
+              <option value="cancelado" <%= o.status === 'cancelado' ? 'selected' : '' %>>cancelado</option>
+            </select>
+          </form>
+        </td>
+        <td><%= new Date(o.created_at).toLocaleString('pt-BR') %></td>
+      </tr>
+    <% }) %>
+    <% if (!orders.length) { %>
+      <tr><td colspan="7">Nenhum pedido ainda.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>
