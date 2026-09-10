@@ -17,14 +17,21 @@ router.get('/produtos', async (req, res) => {
   res.render('products/list', { products: rows });
 });
 
-router.get('/produtos/novo', (req, res) => {
-  res.render('products/form', { product: null, error: null });
+async function loadCategories() {
+  const { rows } = await pool.query(`SELECT * FROM ${SCHEMA}.categories ORDER BY name ASC`);
+  return rows;
+}
+
+router.get('/produtos/novo', async (req, res) => {
+  const categories = await loadCategories();
+  res.render('products/form', { product: null, categories, error: null });
 });
 
 router.get('/produtos/:id/editar', async (req, res) => {
   const { rows } = await pool.query(`SELECT * FROM ${SCHEMA}.products WHERE id = $1`, [req.params.id]);
   if (!rows[0]) return res.redirect('/produtos');
-  res.render('products/form', { product: rows[0], error: null });
+  const categories = await loadCategories();
+  res.render('products/form', { product: rows[0], categories, error: null });
 });
 
 function parseAttributes(body) {
@@ -42,7 +49,8 @@ router.post('/produtos', upload.array('images', MAX_FILES_PER_PRODUCT), async (r
   try {
     const { name, description, category, price, quantity } = req.body;
     if (!name || !price) {
-      return res.render('products/form', { product: req.body, error: 'Nome e preço são obrigatórios.' });
+      const categories = await loadCategories();
+      return res.render('products/form', { product: req.body, categories, error: 'Nome e preço são obrigatórios.' });
     }
 
     const files = req.files || [];
@@ -74,8 +82,10 @@ router.post('/produtos', upload.array('images', MAX_FILES_PER_PRODUCT), async (r
     res.redirect('/produtos');
   } catch (err) {
     console.error(err);
+    const categories = await loadCategories();
     res.render('products/form', {
       product: req.body,
+      categories,
       error: err.message.includes('File too large')
         ? `Cada foto precisa ter até ${MAX_FILE_SIZE / (1024 * 1024)}MB.`
         : 'Erro ao salvar produto. Tente novamente.',
