@@ -22,8 +22,18 @@
     <div class="form-grid">
       <div class="form-row">
         <label>Categoria</label>
-        <input type="text" name="category" placeholder="Ex: Camisetas, Calças, Bermudas"
-          value="<%= product ? (product.category || '') : '' %>" />
+        <% var currentCategory = product ? (product.category || '') : ''; %>
+        <% var categoryNames = categories.map(function(c) { return c.name; }); %>
+        <select name="category">
+          <option value="">Sem categoria</option>
+          <% categories.forEach(function(c) { %>
+            <option value="<%= c.name %>" <%= currentCategory === c.name ? 'selected' : '' %>><%= c.name %></option>
+          <% }) %>
+          <% if (currentCategory && categoryNames.indexOf(currentCategory) === -1) { %>
+            <option value="<%= currentCategory %>" selected><%= currentCategory %> (removida)</option>
+          <% } %>
+        </select>
+        <div class="hint"><a href="/configuracoes">+ criar nova categoria</a></div>
       </div>
       <div class="form-row">
         <label>Preço (R$)</label>
