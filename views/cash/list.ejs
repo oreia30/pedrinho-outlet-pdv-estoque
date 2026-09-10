@@ -2,7 +2,7 @@
 <%- include('../partials/sidebar', { active: 'caixa' }) %>
 
 <h1>Caixa</h1>
-<p class="subtitle">Entradas e saídas — vendas da loja entram aqui sozinhas</p>
+<p class="subtitle">Entradas e saídas — vendas da loja e do balcão entram aqui sozinhas</p>
 
 <% if (saldo !== null) { %>
   <div class="cards">
@@ -13,6 +13,7 @@
   </div>
 <% } %>
 
+<% if (typeof erro !== 'undefined' && erro) { %><div class="error-box"><%= erro %></div><% } %>
 <% if (error) { %><div class="error-box"><%= error %></div><% } %>
 
 <div class="form-card" style="margin-bottom:28px;">
@@ -43,7 +44,7 @@
 </div>
 
 <table>
-  <thead><tr><th>Tipo</th><th>Categoria</th><th>Valor</th><th>Descrição</th><th>Data</th></tr></thead>
+  <thead><tr><th>Tipo</th><th>Categoria</th><th>Valor</th><th>Descrição</th><th>Data</th><th></th></tr></thead>
   <tbody>
     <% transactions.forEach(function(t) { %>
       <tr>
@@ -52,10 +53,20 @@
         <td>R$ <%= Number(t.amount).toFixed(2) %></td>
         <td><%= t.description || '-' %></td>
         <td><%= new Date(t.created_at).toLocaleString('pt-BR') %></td>
+        <td>
+          <% if (!t.ref_type) { %>
+            <a class="btn small secondary" href="/caixa/<%= t.id %>/editar">Editar</a>
+            <form method="POST" action="/caixa/<%= t.id %>/excluir" style="display:inline" onsubmit="return confirm('Excluir este lançamento?');">
+              <button class="btn small danger" type="submit">Excluir</button>
+            </form>
+          <% } else { %>
+            <span class="hint">🔗 venda — <a href="/pedidos">ver em Pedidos</a></span>
+          <% } %>
+        </td>
       </tr>
     <% }) %>
     <% if (!transactions.length) { %>
-      <tr><td colspan="5">Nenhum lançamento ainda.</td></tr>
+      <tr><td colspan="6">Nenhum lançamento ainda.</td></tr>
     <% } %>
   </tbody>
 </table>
