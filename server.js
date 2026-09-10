@@ -13,6 +13,7 @@ const orderRoutes = require('./routes/orders');
 const cashRoutes = require('./routes/cash');
 const dashboardRoutes = require('./routes/dashboard');
 const accountRoutes = require('./routes/account');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use(productRoutes);
 app.use(orderRoutes);
 app.use(cashRoutes);
 app.use(accountRoutes);
+app.use(settingsRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
