@@ -1,23 +1,31 @@
 <%- include('../partials/head', { title: 'Pedidos' }) %>
 <%- include('../partials/sidebar', { active: 'pedidos' }) %>
 
-<h1>Pedidos</h1>
-<p class="subtitle">Vendas feitas pela loja — o estoque e o caixa já foram atualizados automaticamente</p>
+<div class="toolbar">
+  <div>
+    <h1>Pedidos</h1>
+    <p class="subtitle">Vendas da loja online e do balcão — estoque e caixa são atualizados automaticamente</p>
+  </div>
+  <a class="btn" href="/pdv">+ Nova venda (balcão)</a>
+</div>
+
+<% if (typeof erro !== 'undefined' && erro) { %><div class="error-box"><%= erro %></div><% } %>
 
 <table>
   <thead>
-    <tr><th>Cliente</th><th>Contato</th><th>Itens</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Data</th></tr>
+    <tr><th>Canal</th><th>Cliente</th><th>Itens</th><th>Desconto</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Data</th><th></th></tr>
   </thead>
   <tbody>
     <% orders.forEach(function(o) { %>
       <tr>
-        <td><%= o.customer_name %></td>
-        <td><%= o.customer_contact || '-' %></td>
+        <td><span class="badge <%= o.channel === 'balcao' ? 'balcao' : 'loja' %>"><%= o.channel === 'balcao' ? 'Balcão' : 'Loja' %></span></td>
+        <td><%= o.customer_name %><% if (o.customer_contact) { %><div class="hint"><%= o.customer_contact %></div><% } %></td>
         <td>
           <% (o.items || []).forEach(function(item) { %>
             <div><%= item.quantity %>x <%= item.name %></div>
           <% }) %>
         </td>
+        <td><%= Number(o.discount) > 0 ? 'R$ ' + Number(o.discount).toFixed(2) : '-' %></td>
         <td>R$ <%= Number(o.total).toFixed(2) %></td>
         <td><%= o.payment_method || '-' %></td>
         <td>
@@ -30,10 +38,15 @@
           </form>
         </td>
         <td><%= new Date(o.created_at).toLocaleString('pt-BR') %></td>
+        <td>
+          <% if (o.channel === 'balcao' && o.status !== 'cancelado') { %>
+            <a class="btn small secondary" href="/pedidos/<%= o.id %>/editar">Editar</a>
+          <% } %>
+        </td>
       </tr>
     <% }) %>
     <% if (!orders.length) { %>
-      <tr><td colspan="7">Nenhum pedido ainda.</td></tr>
+      <tr><td colspan="9">Nenhum pedido ainda.</td></tr>
     <% } %>
   </tbody>
 </table>
