@@ -1,0 +1,43 @@
+<%- include('../partials/head', { title: 'Produtos' }) %>
+<%- include('../partials/sidebar', { active: 'produtos' }) %>
+
+<div class="toolbar">
+  <div>
+    <h1>Produtos / Estoque</h1>
+    <p class="subtitle">Cadastre peças, fotos e controle a quantidade disponível</p>
+  </div>
+  <a class="btn" href="/produtos/novo">+ Novo produto</a>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Foto</th><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ativo</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% products.forEach(function(p) { %>
+      <tr>
+        <td>
+          <% if (p.image_url) { %>
+            <img class="product-thumb" src="<%= p.image_url %>" alt="<%= p.name %>" />
+          <% } %>
+        </td>
+        <td><%= p.name %></td>
+        <td><%= p.category || '-' %></td>
+        <td>R$ <%= Number(p.price).toFixed(2) %></td>
+        <td><%= p.quantity <= 3 ? '⚠️ ' : '' %><%= p.quantity %></td>
+        <td><%= p.active ? 'Sim' : 'Não' %></td>
+        <td>
+          <a class="btn secondary small" href="/produtos/<%= p.id %>/editar">Editar</a>
+          <form method="POST" action="/produtos/<%= p.id %>/excluir" style="display:inline" onsubmit="return confirm('Excluir este produto?')">
+            <button class="btn danger small" type="submit">Excluir</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!products.length) { %>
+      <tr><td colspan="7">Nenhum produto cadastrado ainda.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>
