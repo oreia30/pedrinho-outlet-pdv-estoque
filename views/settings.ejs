@@ -1,0 +1,89 @@
+<%- include('partials/head', { title: 'Aparência da loja' }) %>
+<%- include('partials/sidebar', { active: 'configuracoes' }) %>
+
+<h1>Aparência da loja</h1>
+<p class="subtitle">Banner, logo e categorias que aparecem na loja virtual</p>
+
+<% if (error) { %><div class="error-box"><%= error %></div><% } %>
+<% if (success) { %><div class="success-box"><%= success %></div><% } %>
+
+<div class="form-card">
+  <h2 class="section-title">Banner da loja</h2>
+  <p class="hint">Aparece no topo da loja, logo abaixo do cabeçalho. Tamanho recomendado:
+    <strong>1920 x 600 pixels</strong> (proporção larga, tipo 3:1) — imagens menores também funcionam,
+    mas essa proporção evita corte estranho no celular. Até <%= MAX_FILE_SIZE_MB %>MB, formato JPG ou PNG.</p>
+
+  <% if (settings.banner_url) { %>
+    <div class="banner-preview">
+      <img src="<%= settings.banner_url %>" alt="Banner atual" />
+    </div>
+    <form method="POST" action="/configuracoes/banner/remover" style="margin-top:10px;">
+      <button class="btn secondary" type="submit">Remover banner</button>
+    </form>
+  <% } else { %>
+    <div class="hint">Nenhum banner cadastrado ainda.</div>
+  <% } %>
+
+  <form method="POST" action="/configuracoes/banner" enctype="multipart/form-data" style="margin-top:16px;">
+    <div class="form-row">
+      <label>Enviar novo banner</label>
+      <input type="file" name="banner" accept="image/*" required />
+    </div>
+    <button class="btn" type="submit">Salvar banner</button>
+  </form>
+</div>
+
+<div class="form-card">
+  <h2 class="section-title">Logo da loja</h2>
+  <p class="hint">Aparece centralizada no cabeçalho da loja. Tamanho recomendado:
+    <strong>500 x 500 pixels</strong> (formato quadrado) ou <strong>600 x 200 pixels</strong> (formato horizontal),
+    de preferência em PNG com fundo transparente. Até <%= MAX_FILE_SIZE_MB %>MB.</p>
+
+  <% if (settings.logo_url) { %>
+    <div class="logo-preview">
+      <img src="<%= settings.logo_url %>" alt="Logo atual" />
+    </div>
+    <form method="POST" action="/configuracoes/logo/remover" style="margin-top:10px;">
+      <button class="btn secondary" type="submit">Remover logo</button>
+    </form>
+  <% } else { %>
+    <div class="hint">Nenhuma logo cadastrada ainda — a loja mostra o nome "PEDRINHO OUTLET" em texto.</div>
+  <% } %>
+
+  <form method="POST" action="/configuracoes/logo" enctype="multipart/form-data" style="margin-top:16px;">
+    <div class="form-row">
+      <label>Enviar nova logo</label>
+      <input type="file" name="logo" accept="image/*" required />
+    </div>
+    <button class="btn" type="submit">Salvar logo</button>
+  </form>
+</div>
+
+<div class="form-card">
+  <h2 class="section-title">Categorias</h2>
+  <p class="hint">Usadas no formulário de produto e no menu de categorias da loja.</p>
+
+  <div class="category-list">
+    <% if (!categories.length) { %>
+      <div class="hint">Nenhuma categoria cadastrada.</div>
+    <% } %>
+    <% categories.forEach(function(c) { %>
+      <div class="category-item">
+        <span><%= c.name %></span>
+        <form method="POST" action="/configuracoes/categorias/<%= c.id %>/excluir" onsubmit="return confirm('Remover a categoria &quot;<%= c.name %>&quot;? Produtos que já usam esse nome não são apagados.');">
+          <button class="remove-cat" type="submit" title="Remover">×</button>
+        </form>
+      </div>
+    <% }) %>
+  </div>
+
+  <form method="POST" action="/configuracoes/categorias" style="margin-top:16px;display:flex;gap:10px;align-items:flex-end;">
+    <div class="form-row" style="flex:1;margin-bottom:0;">
+      <label>Nova categoria</label>
+      <input type="text" name="name" placeholder="Ex: Tênis" required />
+    </div>
+    <button class="btn" type="submit">Adicionar</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>
