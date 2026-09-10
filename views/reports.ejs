@@ -1,0 +1,91 @@
+<%- include('partials/head', { title: 'Relatórios' }) %>
+<%- include('partials/sidebar', { active: 'relatorios' }) %>
+
+<h1>Relatórios</h1>
+<p class="subtitle">Resumo simplificado das vendas e do caixa</p>
+
+<div class="period-tabs">
+  <a href="/relatorios?periodo=hoje" class="<%= periodo === 'hoje' ? 'active' : '' %>">Hoje</a>
+  <a href="/relatorios?periodo=7d" class="<%= periodo === '7d' ? 'active' : '' %>">7 dias</a>
+  <a href="/relatorios?periodo=30d" class="<%= periodo === '30d' ? 'active' : '' %>">30 dias</a>
+  <a href="/relatorios?periodo=mes" class="<%= periodo === 'mes' ? 'active' : '' %>">Mês atual</a>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">Vendas</div>
+    <div class="value"><%= qtdVendas %></div>
+  </div>
+  <div class="card">
+    <div class="label">Faturado</div>
+    <div class="value">R$ <%= totalVendas.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Ticket médio</div>
+    <div class="value">R$ <%= ticketMedio.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Descontos dados</div>
+    <div class="value">R$ <%= totalDescontos.toFixed(2) %></div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">Entradas no caixa</div>
+    <div class="value" style="color:var(--ok);">R$ <%= entradas.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Saídas do caixa</div>
+    <div class="value" style="color:var(--accent);">R$ <%= saidas.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Saldo do período</div>
+    <div class="value">R$ <%= saldoPeriodo.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="label">Vendas canceladas</div>
+    <div class="value"><%= canceladasQtd %> <span style="font-size:0.9rem;color:var(--gray-700);">(R$ <%= canceladasTotal.toFixed(2) %>)</span></div>
+  </div>
+</div>
+
+<div class="report-grid">
+  <div>
+    <h2 class="section-title">Por forma de pagamento</h2>
+    <table>
+      <thead><tr><th>Forma</th><th>Qtd</th><th>Total</th></tr></thead>
+      <tbody>
+        <% porPagamento.forEach(function(p) { %>
+          <tr><td><%= p.metodo %></td><td><%= p.qtd %></td><td>R$ <%= Number(p.total).toFixed(2) %></td></tr>
+        <% }) %>
+        <% if (!porPagamento.length) { %><tr><td colspan="3">Sem vendas no período.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <h2 class="section-title">Por canal de venda</h2>
+    <table>
+      <thead><tr><th>Canal</th><th>Qtd</th><th>Total</th></tr></thead>
+      <tbody>
+        <% porCanal.forEach(function(c) { %>
+          <tr><td><%= c.channel === 'balcao' ? 'Balcão (loja física)' : 'Loja online' %></td><td><%= c.qtd %></td><td>R$ <%= Number(c.total).toFixed(2) %></td></tr>
+        <% }) %>
+        <% if (!porCanal.length) { %><tr><td colspan="3">Sem vendas no período.</td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="section-title" style="margin-top:24px;">Produtos mais vendidos</h2>
+<table>
+  <thead><tr><th>Produto</th><th>Quantidade</th><th>Receita</th></tr></thead>
+  <tbody>
+    <% topProdutos.forEach(function(p) { %>
+      <tr><td><%= p.name %></td><td><%= p.quantidade %></td><td>R$ <%= Number(p.receita).toFixed(2) %></td></tr>
+    <% }) %>
+    <% if (!topProdutos.length) { %><tr><td colspan="3">Sem vendas no período.</td></tr><% } %>
+  </tbody>
+</table>
+
+<%- include('partials/footer') %>
