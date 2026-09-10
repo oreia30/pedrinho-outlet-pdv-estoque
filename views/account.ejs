@@ -1,0 +1,28 @@
+<%- include('partials/head', { title: 'Minha conta' }) %>
+<%- include('partials/sidebar', { active: 'conta' }) %>
+
+<h1>Minha conta</h1>
+<p class="subtitle">Troque a senha padrão assim que possível</p>
+
+<% if (error) { %><div class="error-box"><%= error %></div><% } %>
+<% if (success) { %><div class="success-box"><%= success %></div><% } %>
+
+<div class="form-card">
+  <form method="POST" action="/conta/senha">
+    <div class="form-row">
+      <label>Senha atual</label>
+      <input type="password" name="senhaAtual" required />
+    </div>
+    <div class="form-row">
+      <label>Nova senha (mín. 8 caracteres)</label>
+      <input type="password" name="novaSenha" required minlength="8" />
+    </div>
+    <div class="form-row">
+      <label>Confirmar nova senha</label>
+      <input type="password" name="confirmarSenha" required minlength="8" />
+    </div>
+    <button class="btn" type="submit">Salvar nova senha</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>
